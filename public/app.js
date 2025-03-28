@@ -348,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 children: []
             };
 
-            // 计算总文件数
+            // 计算总文件数（包括目录）
             const totalFiles = selectedFiles.size;
             let processedFiles = 0;
 
@@ -405,16 +405,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // 更新进度到90%
+            progressFill.style.width = '90%';
+            progressText.textContent = '正在生成最终的 ZIP 文件...';
+
             // 添加目录结构JSON文件
             newZip.file('file_structure.json', JSON.stringify(fileStructure, null, 2));
 
             // 生成处理后的 ZIP 文件
-            progressText.textContent = '正在生成最终的 ZIP 文件...';
             processedZip = await newZip.generateAsync({ type: 'blob' });
             
+            // 完成处理，进度条到100%
+            progressFill.style.width = '100%';
+            progressText.textContent = '处理完成！';
             showStatus('文件处理完成！', 'success');
             downloadButton.disabled = false;
-            progressText.textContent = '处理完成！';
         } catch (error) {
             showStatus('处理失败：' + error.message, 'error');
             console.error('处理过程出错:', error);
