@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码仓库转换工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 40px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            background-color: #fafafa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-section.dragover {
+            border-color: #4CAF50;
+            background-color: #E8F5E9;
+        }
+        .upload-icon {
+            font-size: 48px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .upload-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .upload-hint {
+            font-size: 14px;
+            color: #999;
+        }
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .info {
+            background-color: #d9edf7;
+            color: #31708f;
+        }
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            text-align: center;
+            margin-top: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        #fileInput {
+            display: none;
+        }
+        .file-list {
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            display: none;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        .file-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .file-item .file-icon {
+            margin-right: 10px;
+            color: #666;
+        }
+        .file-item .file-name {
+            flex-grow: 1;
+        }
+        .file-item .file-size {
+            color: #999;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .directory {
+            margin-left: 20px;
+            border-left: 1px dashed #ddd;
+            padding-left: 10px;
+        }
+        .directory-header {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .directory-header:hover {
+            background-color: #f5f5f5;
+        }
+        .directory-content {
+            display: none;
+        }
+        .directory-content.expanded {
+            display: block;
+        }
+        .directory-icon {
+            margin-right: 5px;
+            transition: transform 0.2s;
+        }
+        .directory-icon.expanded {
+            transform: rotate(90deg);
+        }
+        .filter-controls {
+            margin: 10px 0;
+            display: none;
+        }
+        .filter-controls button {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>代码仓库转换工具</h1>
+        <div class="upload-section" id="dropZone">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">拖拽文件到这里或点击选择文件</div>
+            <div class="upload-hint">只支持 ZIP 格式的代码仓库</div>
+            <input type="file" id="fileInput" accept=".zip">
+            <button class="button" onclick="document.getElementById('fileInput').click()">选择文件</button>
+        </div>
+        <div class="filter-controls" id="filterControls">
+            <button class="button" id="selectAll">全选</button>
+            <button class="button" id="deselectAll">取消全选</button>
+        </div>
+        <div class="file-list" id="fileList"></div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">正在处理文件...</div>
+        </div>
+        <div id="status"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="button" id="processButton" disabled>处理文件</button>
+            <button class="button" id="downloadButton" disabled>下载文件</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html> 

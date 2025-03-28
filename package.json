@@ -1,0 +1,16 @@
+{
+  "name": "code-to-html-web",
+  "version": "1.0.0",
+  "description": "Web interface for code-to-html converter",
+  "scripts": {
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public"
+  },
+  "dependencies": {
+    "highlight.js": "^11.9.0",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
