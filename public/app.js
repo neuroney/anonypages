@@ -2,8 +2,7 @@ import {
     folderIconSvg, 
     fileIconSvg, 
     indexHtmlTemplate, 
-    packageJsonTemplate, 
-    package_lockJsonTemplate,
+    packageJsonTemplate,
     stylesCssTemplate,
     scriptJsTemplate,
     sourceCodeViewerTemplate
@@ -409,7 +408,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // 添加其他必要文件
             newZip.file('index.html', indexHtmlTemplate);
             newZip.file('package.json', packageJsonTemplate);
-            newZip.file('package-lock.json', package_lockJsonTemplate);
             newZip.file('styles.css', stylesCssTemplate);
             newZip.file('script.js', scriptJsTemplate);
 
@@ -480,25 +478,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // 更新进度到90%
             progressFill.style.width = '90%';
             progressText.textContent = getMessage('addingDeps');
-
-            // 添加 node_modules 目录
-            try {
-                const nodeModulesZip = await fetch('node_modules.zip').then(res => res.blob());
-                const nodeModulesJsZip = await JSZip.loadAsync(nodeModulesZip);
-                
-                // 将 node_modules 目录添加到根目录
-                for (const [path, entry] of Object.entries(nodeModulesJsZip.files)) {
-                    if (entry.dir) {
-                        newZip.folder(path);
-                    } else {
-                        const content = await entry.async('blob');
-                        newZip.file(path, content);
-                    }
-                }
-            } catch (error) {
-                console.error(getMessage('depsError'), error);
-                showStatus(getMessage('depsError'), 'warning');
-            }
 
             // 添加目录结构JSON文件
             rootFolder.file('file_structure.json', JSON.stringify(fileStructure, null, 2));
