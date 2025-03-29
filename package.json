@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Web interface for code-to-html converter",
   "scripts": {
-    "start": "http-server public -p 8788",
-    "dev": "http-server public -p 8788 -c-1"
+    "start": "http-server -p 8788",
+    "dev": "http-server -p 8788 -c-1"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",
