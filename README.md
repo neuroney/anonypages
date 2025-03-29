@@ -1,10 +1,9 @@
-# Code2HTML
+# AnonyPages
 
 A powerful tool for converting code to HTML, perfect for double-blind code review in academic papers.
 
-[English](#english) | [中文](READMEcn.md)
+[English](README.md) | [中文](READMEcn.md)
 
-## English
 
 ### ✨ Features
 
@@ -38,7 +37,7 @@ npm install
 
 1. Start the development server:
 ```bash
-npm start
+npm run dev
 ```
 
 2. Access the application:
