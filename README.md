@@ -1,46 +1,76 @@
-# 代码转HTML工具
+# Code2HTML
 
-这是一个简单的Web工具，可以将代码文件转换为HTML格式，支持批量处理ZIP压缩包中的文件。
+A powerful tool for converting code to HTML, perfect for double-blind code review in academic papers.
 
-## 功能特点
+[English](#english) | [中文](READMEcn.md)
 
-- 支持拖放上传ZIP文件
-- 自动处理压缩包中的所有代码文件
-- 生成文件结构JSON
-- 使用 highlight.js 进行代码高亮
-- 支持行号显示
-- 美观的响应式界面
+## English
 
-## 安装
+### ✨ Features
 
-1. 确保已安装 Node.js (推荐 v14 或更高版本)
-2. 克隆此仓库
-3. 安装依赖：
+- 🚀 Convert code files to static HTML pages
+- 📦 Ready to deploy on Cloudflare Pages
+- 🎨 Syntax highlighting with highlight.js
+- 🔒 Perfect for double-blind code review
+
+### 🛠️ Tech Stack
+
+- Node.js
+- Express.js
+- highlight.js
+- HTML5/CSS3
+
+### 📦 Installation
+
+1. Ensure Node.js (v14+) is installed
+2. Clone the repository:
+```bash
+git clone https://github.com/neuroney/anonypages.git
+cd anonypages
+```
+
+3. Install dependencies:
 ```bash
 npm install
 ```
 
-## 使用方法
+### 🚀 Quick Start
 
-1. 启动服务器：
+1. Start the development server:
 ```bash
 npm start
 ```
 
-2. 在浏览器中访问 http://localhost:3000
+2. Access the application:
+Open your browser and visit http://localhost:8788
 
-3. 将包含代码文件的ZIP压缩包拖放到上传区域，或点击选择文件
+3. Usage:
+   - Drag and drop your ZIP file containing code
+   - Or click to select file
 
-4. 等待处理完成后，结果文件会自动下载
+4. Wait for processing, the result ZIP will be downloaded
 
-## 输出文件说明
+### 📄 Output
 
-处理完成后会生成一个ZIP文件，包含：
-- 所有代码文件的HTML版本
-- 文件结构JSON文件 (structure.json)
+The tool generates a ZIP file containing:
+- Static HTML pages for all code files
+- File structure JSON (structure.json)
+- Ready to deploy on Cloudflare Pages
 
-## 注意事项
+### ⚠️ Limitations
 
-- 仅支持上传ZIP格式的压缩包
-- 建议压缩包大小不要超过50MB
-- 处理大文件可能需要较长时间，请耐心等待 
+- ZIP format only
+- Recommended file size: under 20MB
+- Large files may require longer processing time
+
+### 📝 License
+
+MIT License
+
+### 🤝 Contributing
+
+Issues and Pull Requests are welcome!
+
+### 📞 Contact
+
+For questions or suggestions, please open an Issue or email [neuroney@outlook.com]

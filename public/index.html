@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="welcome">Code Anonymization Tool for Paper Review</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/default.min.css">
     <style>
         :root {
             --primary-color: #2563eb;
@@ -298,6 +298,69 @@
             margin: 16px 0;
             display: none;
             gap: 12px;
+            align-items: flex-start;
+        }
+
+        .theme-preview-container {
+            flex: 1;
+            margin-left: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+        }
+
+        .theme-preview-header {
+            padding: 8px 16px;
+            background-color: var(--background);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .theme-preview-content {
+            padding: 16px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .theme-preview-content pre {
+            margin: 0;
+            padding: 0;
+        }
+
+        .theme-preview-content code {
+            display: block;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .theme-select {
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .theme-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .theme-select option {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
         }
 
         .language-switch {
@@ -470,11 +533,94 @@
             <input type="file" id="fileInput" accept=".zip">
             <button class="button" onclick="document.getElementById('fileInput').click()" data-i18n="selectFile">Select Repository</button>
         </div>
-        <div class="filter-controls" id="filterControls">
-            <button class="button" id="selectAll" data-i18n="selectAll">Select All</button>
-            <button class="button" id="deselectAll" data-i18n="deselectAll">Deselect All</button>
-        </div>
+
+        <!-- 文件列表 -->
         <div class="file-list" id="fileList"></div>
+
+        <!-- 文件选择控制 -->
+        <div class="filter-controls" id="filterControls">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="button" id="selectAll" data-i18n="selectAll">Select All</button>
+                <button class="button" id="deselectAll" data-i18n="deselectAll">Deselect All</button>
+            </div>
+        </div>
+
+        <!-- 主题选择和预览 -->
+        <div class="theme-section" style="margin: 20px 0;">
+            <div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <select id="themeSelect" class="theme-select">
+                        <option value="default" data-i18n="defaultTheme">默认主题</option>
+                        
+                        <!-- 流行编辑器主题 -->
+                        <option value="vs" data-i18n="vsTheme">Visual Studio</option>
+                        <option value="vs2015" data-i18n="vs2015Theme">Visual Studio 2015</option>
+                        <option value="idea" data-i18n="ideaTheme">IntelliJ IDEA</option>
+                        <option value="xcode" data-i18n="xcodeTheme">Xcode</option>
+                        <option value="intellij-light" data-i18n="intellijLightTheme">IntelliJ Light</option>
+                        
+                        <!-- 流行暗色主题 -->
+                        <option value="monokai" data-i18n="monokaiTheme">Monokai</option>
+                        <option value="monokai-sublime" data-i18n="monokaiSublimeTheme">Monokai Sublime</option>
+                        <option value="nord" data-i18n="nordTheme">Nord</option>
+                        <option value="night-owl" data-i18n="nightOwlTheme">Night Owl</option>
+                        <option value="tokyo-night-dark" data-i18n="tokyoNightDarkTheme">Tokyo Night Dark</option>
+                        <option value="obsidian" data-i18n="obsidianTheme">Obsidian</option>
+                        <option value="stackoverflow-dark" data-i18n="stackoverflowDarkTheme">Stack Overflow Dark</option>
+                        <option value="rose-pine" data-i18n="rosePineTheme">Rose Pine</option>
+                        <option value="rose-pine-moon" data-i18n="rosePineMoonTheme">Rose Pine Moon</option>
+                        <option value="nnfx-dark" data-i18n="nnfxDarkTheme">NNFX Dark</option>
+                        <option value="isbl-editor-dark" data-i18n="isblEditorDarkTheme">ISBL Editor Dark</option>
+                        <option value="qtcreator-dark" data-i18n="qtcreatorDarkTheme">Qt Creator Dark</option>
+                        <option value="panda-syntax-dark" data-i18n="pandaSyntaxDarkTheme">Panda Syntax Dark</option>
+                        <option value="kimbie-dark" data-i18n="kimbieDarkTheme">Kimbie Dark</option>
+                        <option value="paraiso-dark" data-i18n="paraisoDarkTheme">Paraiso Dark</option>
+                        <option value="tomorrow-night-blue" data-i18n="tomorrowNightBlueTheme">Tomorrow Night Blue</option>
+                        <option value="tomorrow-night-bright" data-i18n="tomorrowNightBrightTheme">Tomorrow Night Bright</option>
+                        <option value="hybrid" data-i18n="hybridTheme">Hybrid</option>
+                        <option value="ir-black" data-i18n="irBlackTheme">IR Black</option>
+                        
+                        <!-- 流行亮色主题 -->
+                        <option value="stackoverflow-light" data-i18n="stackoverflowLightTheme">Stack Overflow Light</option>
+                        <option value="tokyo-night-light" data-i18n="tokyoNightLightTheme">Tokyo Night Light</option>
+                        <option value="rose-pine-dawn" data-i18n="rosePineDawnTheme">Rose Pine Dawn</option>
+                        <option value="nnfx-light" data-i18n="nnfxLightTheme">NNFX Light</option>
+                        <option value="isbl-editor-light" data-i18n="isblEditorLightTheme">ISBL Editor Light</option>
+                        <option value="qtcreator-light" data-i18n="qtcreatorLightTheme">Qt Creator Light</option>
+                        <option value="panda-syntax-light" data-i18n="pandaSyntaxLightTheme">Panda Syntax Light</option>
+                        <option value="kimbie-light" data-i18n="kimbieLightTheme">Kimbie Light</option>
+                        <option value="paraiso-light" data-i18n="paraisoLightTheme">Paraiso Light</option>
+                        <option value="lightfair" data-i18n="lightfairTheme">Lightfair</option>
+                        <option value="gradient-light" data-i18n="gradientLightTheme">Gradient Light</option>
+                        
+                        <!-- 其他主题 -->
+                        <option value="purebasic" data-i18n="purebasicTheme">PureBasic</option>
+                        <option value="pojoaque" data-i18n="pojoaqueTheme">Pojoaque</option>
+                        <option value="magula" data-i18n="magulaTheme">Magula</option>
+                        <option value="googlecode" data-i18n="googlecodeTheme">Google Code</option>
+                        <option value="grayscale" data-i18n="grayscaleTheme">Grayscale</option>
+                        <option value="school-book" data-i18n="schoolBookTheme">School Book</option>
+                        <option value="shades-of-purple" data-i18n="shadesOfPurpleTheme">Shades of Purple</option>
+                        <option value="srcery" data-i18n="srceryTheme">Srcery</option>
+                        <option value="sunburst" data-i18n="sunburstTheme">Sunburst</option>
+                        <option value="xt256" data-i18n="xt256Theme">XT256</option>
+                    </select>
+                </div>
+                <div class="theme-preview-container">
+                    <div class="theme-preview-header" data-i18n="themePreview">主题预览</div>
+                    <div class="theme-preview-content">
+                        <pre><code class="language-python">def fibonacci(n):
+    if n <= 1:
+        return n
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="progress-container" id="progressContainer">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
@@ -493,7 +639,7 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="i18n.js"></script>
     <script src="app.js" type="module"></script>

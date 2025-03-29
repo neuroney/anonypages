@@ -7,7 +7,7 @@
     "deploy": "wrangler pages deploy public"
   },
   "dependencies": {
-    "highlight.js": "^11.9.0",
+    "highlight.js": "^11.11.1",
     "jszip": "^3.10.1"
   },
   "devDependencies": {

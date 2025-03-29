@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const filterControls = document.getElementById('filterControls');
     const selectAllButton = document.getElementById('selectAll');
     const deselectAllButton = document.getElementById('deselectAll');
+    const themeSelect = document.getElementById('themeSelect');
     let processedZip = null;
     let uploadedZip = null;
     let selectedFiles = new Set();
@@ -251,6 +252,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         fileList.style.display = 'block';
         filterControls.style.display = 'block';
+
+        // 自动展开第一个目录
+        const firstDirectory = fileList.querySelector('.directory');
+        if (firstDirectory) {
+            const content = firstDirectory.querySelector('.directory-content');
+            const icon = firstDirectory.querySelector('.directory-icon');
+            if (content && icon) {
+                content.style.display = 'block';
+                icon.textContent = '▼';
+            }
+        }
     }
 
     // 修改全选/取消全选按钮事件
@@ -313,12 +325,49 @@ document.addEventListener('DOMContentLoaded', () => {
         handleFiles(e.target.files);
     });
 
+    // 添加语言相关的提示信息
+    const messages = {
+        zh: {
+            uploadSuccess: '文件上传成功',
+            uploadError: '请上传 ZIP 文件',
+            readError: '读取 ZIP 文件失败：',
+            processing: '正在处理文件...',
+            processingFile: '正在处理文件',
+            addingDeps: '正在添加依赖文件...',
+            depsError: '警告：无法添加依赖文件',
+            processComplete: '文件处理完成！',
+            processError: '处理失败：'
+        },
+        en: {
+            uploadSuccess: 'File uploaded successfully',
+            uploadError: 'Please upload a ZIP file',
+            readError: 'Failed to read ZIP file: ',
+            processing: 'Processing files...',
+            processingFile: 'Processing file',
+            addingDeps: 'Adding dependencies...',
+            depsError: 'Warning: Failed to add dependencies',
+            processComplete: 'Processing complete!',
+            processError: 'Processing failed: '
+        }
+    };
+
+    // 获取当前语言
+    function getCurrentLanguage() {
+        return document.documentElement.lang || 'en';
+    }
+
+    // 获取提示信息
+    function getMessage(key) {
+        const lang = getCurrentLanguage();
+        return messages[lang][key] || messages['en'][key];
+    }
+
     function handleFiles(files) {
         if (files.length === 0) return;
         
         const file = files[0];
         if (!file.name.endsWith('.zip')) {
-            showStatus('请上传 ZIP 文件', 'error');
+            showStatus(getMessage('uploadError'), 'error');
             return;
         }
 
@@ -332,9 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
         zip.loadAsync(file).then(zip => {
             uploadedZip = zip;
             displayFileList(zip);
-            showStatus('请选择要处理的文件', 'info');
+            showStatus(getMessage('uploadSuccess'), 'success');
         }).catch(error => {
-            showStatus('读取 ZIP 文件失败：' + error.message, 'error');
+            showStatus(getMessage('readError') + error.message, 'error');
         });
     }
 
@@ -342,28 +391,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!uploadedZip || selectedFiles.size === 0) return;
 
         try {
-            showStatus('正在处理文件...', 'info');
+            showStatus(getMessage('processing'), 'info');
             processButton.disabled = true;
             progressContainer.style.display = 'block';
             progressFill.style.width = '0%';
-            progressText.textContent = '正在处理文件...';
+            progressText.textContent = getMessage('processing');
 
             // 创建新的 ZIP 文件用于存储处理后的内容
             const newZip = new JSZip();
-            const root1Folder = newZip.folder('upload_to_pages');
-            const rootFolder = root1Folder.folder('processed_repos');
-            const iconsFolder = root1Folder.folder('icons');
+            const rootFolder = newZip.folder('processed_repos');
+            const iconsFolder = newZip.folder('icons');
 
             // 添加图标文件
             iconsFolder.file('folder.svg', folderIconSvg);
             iconsFolder.file('file.svg', fileIconSvg);
 
             // 添加其他必要文件
-            root1Folder.file('index.html', indexHtmlTemplate);
-            root1Folder.file('package.json', packageJsonTemplate);
-            root1Folder.file('package-lock.json', package_lockJsonTemplate);
-            root1Folder.file('styles.css', stylesCssTemplate);
-            root1Folder.file('script.js', scriptJsTemplate);
+            newZip.file('index.html', indexHtmlTemplate);
+            newZip.file('package.json', packageJsonTemplate);
+            newZip.file('package-lock.json', package_lockJsonTemplate);
+            newZip.file('styles.css', stylesCssTemplate);
+            newZip.file('script.js', scriptJsTemplate);
 
             // 用于生成目录结构的对象
             const fileStructure = {
@@ -385,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 processedFiles++;
                 const progress = (processedFiles / totalFiles) * 100;
                 progressFill.style.width = `${progress}%`;
-                progressText.textContent = `正在处理文件 ${processedFiles}/${totalFiles}...`;
+                progressText.textContent = `${getMessage('processingFile')} ${processedFiles}/${totalFiles}...`;
 
                 // 确保目录存在
                 const dirPath = path.split('/').slice(0, -1).join('/');
@@ -412,16 +460,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // 创建带有行号的HTML内容
                     const lines = content.split('\n');
-                    const htmlContent = sourceCodeViewerTemplate(path, highlightedContent, lines);
+                    const htmlContent = sourceCodeViewerTemplate(path, highlightedContent, lines, themeSelect.value);
                     
                     // 将处理后的HTML文件添加到新的ZIP中，保留原始文件后缀
                     const newPath = path + '.html';
                     rootFolder.file(newPath, htmlContent);
                     addToStructure(fileStructure, newPath, 'file');
                     
-                    console.log(`处理文件: ${path} -> ${newPath}`);
+                    //console.log(`处理文件: ${path} -> ${newPath}`);
                 } catch (error) {
-                    console.error(`处理文件 ${path} 时出错:`, error);
+                    //console.error(`处理文件 ${path} 时出错:`, error);
                     // 如果处理失败，复制原始文件
                     const content = await entry.async('blob');
                     rootFolder.file(path, content);
@@ -431,7 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 更新进度到90%
             progressFill.style.width = '90%';
-            progressText.textContent = '正在添加 node_modules 目录...';
+            progressText.textContent = getMessage('addingDeps');
 
             // 添加 node_modules 目录
             try {
@@ -441,15 +489,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 将 node_modules 目录添加到根目录
                 for (const [path, entry] of Object.entries(nodeModulesJsZip.files)) {
                     if (entry.dir) {
-                        root1Folder.folder(path);
+                        newZip.folder(path);
                     } else {
                         const content = await entry.async('blob');
-                        root1Folder.file(path, content);
+                        newZip.file(path, content);
                     }
                 }
             } catch (error) {
-                console.error('添加 node_modules 目录失败:', error);
-                showStatus('警告：无法添加 node_modules 目录', 'warning');
+                console.error(getMessage('depsError'), error);
+                showStatus(getMessage('depsError'), 'warning');
             }
 
             // 添加目录结构JSON文件
@@ -472,12 +520,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 完成处理，进度条到100%
             progressFill.style.width = '100%';
-            progressText.textContent = '处理完成！';
-            showStatus('文件处理完成！', 'success');
+            progressText.textContent = getMessage('processComplete');
+            showStatus(getMessage('processComplete'), 'success');
             downloadButton.disabled = false;
         } catch (error) {
-            showStatus('处理失败：' + error.message, 'error');
-            console.error('处理过程出错:', error);
+            showStatus(getMessage('processError') + error.message, 'error');
+            console.error('Processing error:', error);
         } finally {
             processButton.disabled = false;
         }
@@ -505,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             return hljs.highlight(code, { language }).value;
         } catch (e) {
-            console.warn(`无法高亮显示 ${language} 代码：`, e);
+            //console.warn(`无法高亮显示 ${language} 代码：`, e);
             return code;
         }
     }
@@ -554,4 +602,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    // 主题预览功能
+    function updateThemePreview() {
+        const theme = themeSelect.value;
+        const previewCode = document.querySelector('.theme-preview-content code');
+        const previewContainer = document.querySelector('.theme-preview-container');
+        
+        // 移除所有已加载的主题样式
+        const existingStyles = document.querySelectorAll('link[href*="highlight.js"]');
+        existingStyles.forEach(style => {
+            if (style.href.includes('styles/')) {
+                style.remove();
+            }
+        });
+
+        // 加载新主题
+        const newStyle = document.createElement('link');
+        newStyle.rel = 'stylesheet';
+        newStyle.href = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/${theme}.min.css`;
+        document.head.appendChild(newStyle);
+
+        // 重新高亮代码
+        hljs.highlightElement(previewCode);
+    }
+
+    // 监听主题选择变化
+    themeSelect.addEventListener('change', updateThemePreview);
+
+    // 初始化主题预览
+    updateThemePreview();
 }); 

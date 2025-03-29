@@ -1429,13 +1429,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });`;
 
 // 源代码查看器 HTML 模板
-export const sourceCodeViewerTemplate = (fileName, highlightedCode, lines) => `<!DOCTYPE html>
+export const sourceCodeViewerTemplate = (fileName, highlightedCode, lines, theme = 'default') => `<!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${fileName}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/${theme}.min.css">
     <style>
         body {
             margin: 0;
@@ -1496,7 +1496,7 @@ export const sourceCodeViewerTemplate = (fileName, highlightedCode, lines) => `<
     <div class="source-code-container">
         <div class="source-code">
             <div class="line-numbers">
-                ${lines.map((_, i) => `<span class="line-number">${i + 1}</span>`).join('\n')}
+                ${lines.map((_, i) => `<span class="line-number">${i + 1}</span>`).join('')}
             </div>
             <div class="code-content">
                 <pre class="hljs">${highlightedCode}</pre>
