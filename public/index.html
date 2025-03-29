@@ -1,220 +1,508 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>代码仓库转换工具</title>
+    <title data-i18n="welcome">Code Anonymization Tool for Paper Review</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
     <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --info-color: #3b82f6;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
+            background-color: var(--background);
             min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
         }
+
         .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
+        .container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
         h1 {
-            color: #333;
+            color: var(--text-primary);
             text-align: center;
             margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
+
         .upload-section {
             text-align: center;
             margin-bottom: 30px;
-            padding: 40px;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            background-color: #fafafa;
-            transition: all 0.3s ease;
+            padding: 60px 40px;
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            background-color: var(--card-bg);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(79, 70, 229, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .upload-section:hover::before {
+            opacity: 1;
+        }
+
         .upload-section.dragover {
-            border-color: #4CAF50;
-            background-color: #E8F5E9;
+            border-color: var(--primary-color);
+            background-color: rgba(37, 99, 235, 0.05);
+            transform: scale(1.02);
         }
+
         .upload-icon {
-            font-size: 48px;
-            color: #666;
+            font-size: 64px;
+            color: var(--primary-color);
             margin-bottom: 20px;
+            transition: transform 0.3s ease;
         }
+
+        .upload-section:hover .upload-icon {
+            transform: translateY(-5px);
+        }
+
         .upload-text {
-            font-size: 18px;
-            color: #666;
+            font-size: 1.25rem;
+            color: var(--text-primary);
             margin-bottom: 10px;
+            font-weight: 500;
         }
+
         .upload-hint {
-            font-size: 14px;
-            color: #999;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
+
         .button {
-            background-color: #4CAF50;
+            background-color: var(--primary-color);
             color: white;
             padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1rem;
+            font-weight: 500;
             margin: 10px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
         }
+
         .button:hover {
-            background-color: #45a049;
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
+
         .button:disabled {
-            background-color: #cccccc;
+            background-color: var(--text-secondary);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
+
+        #fileInput {
+            display: none;
+        }
+
         #status {
             margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
+            padding: 16px;
+            border-radius: 8px;
             text-align: center;
+            font-weight: 500;
         }
+
         .success {
-            background-color: #dff0d8;
-            color: #3c763d;
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(34, 197, 94, 0.2);
         }
+
         .error {
-            background-color: #f2dede;
-            color: #a94442;
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
+
         .info {
-            background-color: #d9edf7;
-            color: #31708f;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
+
         .progress-container {
             margin: 20px 0;
             display: none;
         }
+
         .progress-bar {
             width: 100%;
-            height: 20px;
-            background-color: #f0f0f0;
-            border-radius: 10px;
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
             overflow: hidden;
         }
+
         .progress-fill {
             height: 100%;
-            background-color: #4CAF50;
+            background: linear-gradient(90deg, var(--primary-color), #4f46e5);
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .progress-text {
             text-align: center;
-            margin-top: 5px;
-            color: #666;
-            font-size: 14px;
+            margin-top: 8px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
         }
-        #fileInput {
-            display: none;
-        }
+
         .file-list {
             margin: 20px 0;
             max-height: 400px;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
             display: none;
+            background-color: var(--card-bg);
         }
+
         .file-item {
             display: flex;
             align-items: center;
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
         }
+
+        .file-item:hover {
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
         .file-item:last-child {
             border-bottom: none;
         }
+
         .file-item input[type="checkbox"] {
-            margin-right: 10px;
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
+
+        .file-item input[type="checkbox"]:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
         .file-item .file-icon {
-            margin-right: 10px;
-            color: #666;
+            margin-right: 12px;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
         }
+
         .file-item .file-name {
             flex-grow: 1;
+            color: var(--text-primary);
+            font-weight: 500;
         }
+
         .file-item .file-size {
-            color: #999;
-            font-size: 14px;
-            margin-left: 10px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-left: 12px;
         }
+
         .directory {
-            margin-left: 20px;
-            border-left: 1px dashed #ddd;
-            padding-left: 10px;
+            margin-left: 24px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 16px;
         }
+
         .directory-header {
             display: flex;
             align-items: center;
-            padding: 8px;
+            padding: 12px;
             cursor: pointer;
             user-select: none;
+            transition: background-color 0.2s ease;
+            border-radius: 8px;
         }
+
         .directory-header:hover {
-            background-color: #f5f5f5;
+            background-color: rgba(37, 99, 235, 0.05);
         }
+
         .directory-content {
             display: none;
+            transition: all 0.3s ease;
         }
+
         .directory-content.expanded {
             display: block;
         }
+
         .directory-icon {
-            margin-right: 5px;
-            transition: transform 0.2s;
+            margin-right: 8px;
+            transition: transform 0.3s ease;
+            color: var(--text-secondary);
         }
+
         .directory-icon.expanded {
             transform: rotate(90deg);
         }
+
         .filter-controls {
-            margin: 10px 0;
+            margin: 16px 0;
             display: none;
+            gap: 12px;
         }
-        .filter-controls button {
-            margin-right: 10px;
+
+        .language-switch {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1000;
+        }
+
+        .language-switch button {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .language-switch button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .description {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features {
+            background-color: var(--background);
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border-color);
+        }
+
+        .features h2 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .features ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .features li {
+            margin-bottom: 0;
+            color: var(--text-secondary);
+            padding: 16px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .features li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-color: var(--primary-color);
+        }
+
+        .purpose {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 0.875rem;
+            font-style: italic;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .deploy-guide {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background-color: var(--background);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .deploy-guide button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .deploy-guide button:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .deploy-guide p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 1.125rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+            }
+
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-section {
+                padding: 40px 20px;
+            }
+
+            .features ul {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="language-switch">
+        <button onclick="toggleLanguage()" data-i18n="switchLanguage">中文</button>
+    </div>
     <div class="container">
-        <h1>代码仓库转换工具</h1>
+        <h1 data-i18n="welcome">Code Anonymization Tool for Paper Review</h1>
+        <p class="description" data-i18n="description">Convert your code repository into an anonymous static website for paper review</p>
+        <p class="purpose" data-i18n="purpose">This tool helps you create an anonymous version of your code repository for paper review</p>
+        
+        <div class="features">
+            <h2 data-i18n="features">Features:</h2>
+            <ul>
+                <li data-i18n="feature2">• Generates a static website ready for Cloudflare Pages deployment</li>
+                <li data-i18n="feature3">• Preserves code structure and functionality</li>
+                <li data-i18n="feature4">• Easy to deploy and share with reviewers</li>
+            </ul>
+        </div>
+
         <div class="upload-section" id="dropZone">
             <div class="upload-icon">📁</div>
-            <div class="upload-text">拖拽文件到这里或点击选择文件</div>
-            <div class="upload-hint">只支持 ZIP 格式的代码仓库</div>
+            <div class="upload-text" data-i18n="uploadText">Drag and drop your code repository ZIP file here or click to select</div>
+            <div class="upload-hint" data-i18n="uploadHint">Support for ZIP format code repositories only</div>
             <input type="file" id="fileInput" accept=".zip">
-            <button class="button" onclick="document.getElementById('fileInput').click()">选择文件</button>
+            <button class="button" onclick="document.getElementById('fileInput').click()" data-i18n="selectFile">Select Repository</button>
         </div>
         <div class="filter-controls" id="filterControls">
-            <button class="button" id="selectAll">全选</button>
-            <button class="button" id="deselectAll">取消全选</button>
+            <button class="button" id="selectAll" data-i18n="selectAll">Select All</button>
+            <button class="button" id="deselectAll" data-i18n="deselectAll">Deselect All</button>
         </div>
         <div class="file-list" id="fileList"></div>
         <div class="progress-container" id="progressContainer">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="progress-text" id="progressText">正在处理文件...</div>
+            <div class="progress-text" id="progressText" data-i18n="processing">Processing files...</div>
         </div>
         <div id="status"></div>
         <div style="text-align: center; margin-top: 20px;">
-            <button class="button" id="processButton" disabled>处理文件</button>
-            <button class="button" id="downloadButton" disabled>下载文件</button>
+            <button class="button" id="processButton" disabled data-i18n="process">Process</button>
+            <button class="button" id="downloadButton" disabled data-i18n="download">Download ZIP</button>
+        </div>
+
+        <div class="deploy-guide">
+            <p data-i18n="deployGuideDesc">Learn how to deploy your anonymous site to Cloudflare Pages</p>
+            <button onclick="window.location.href='deploy-guide.html'" data-i18n="deployGuide">Deployment Guide</button>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="app.js"></script>
+    <script src="i18n.js"></script>
+    <script src="app.js" type="module"></script>
+    <script>
+        function toggleLanguage() {
+            const currentLang = getCurrentLanguage();
+            setLanguage(currentLang === 'en' ? 'zh' : 'en');
+            document.documentElement.lang = currentLang === 'en' ? 'zh' : 'en';
+        }
+    </script>
 </body>
 </html> 

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="deployGuideTitle">Deployment Guide - Cloudflare Pages</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .step h2 {
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+        .step p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .step img {
+            max-width: 100%;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        .back-button {
+            display: inline-block;
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #5a6268;
+        }
+        .language-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .language-switch button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .language-switch button:hover {
+            background-color: #45a049;
+        }
+        .cloudflare-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+        }
+        .cloudflare-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .cloudflare-section p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .cloudflare-button {
+            display: inline-block;
+            background-color: #f6821f;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .cloudflare-button:hover {
+            background-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(246, 130, 31, 0.2);
+        }
+        .cloudflare-link {
+            color: #f6821f;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .cloudflare-link:hover {
+            color: #e67e22;
+            text-decoration: underline;
+        }
+        .sub-step {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .sub-step:last-child {
+            margin-bottom: 0;
+        }
+        .sub-step h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .sub-step p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .sub-step img {
+            max-width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switch">
+        <button onclick="toggleLanguage()" data-i18n="switchLanguage">中文</button>
+    </div>
+    <div class="container">
+        <h1 data-i18n="deployGuideTitle">Deploy to Cloudflare Pages</h1>
+        
+        <div class="step">
+            <h2 data-i18n="step1Title">Step 1: Sign up for Cloudflare</h2>
+            <p data-i18n="step1Desc">If you don't have a Cloudflare account, go to <a href="https://www.cloudflare.com/" target="_blank" class="cloudflare-link">cloudflare.com</a> and create one. It's free!</p>
+            <img src="images/deploy/step1-signup.png" alt="Cloudflare signup page" data-i18n-alt="step1ImageAlt">
+        </div>
+
+        <div class="step">
+            <h2 data-i18n="step2Title">Step 2: Access Cloudflare Pages</h2>
+            <p data-i18n="step2Desc">After logging in, click on 'Pages' in the left sidebar of your Cloudflare dashboard.</p>
+            <img src="images/deploy/step2-dashboard.png" alt="Cloudflare dashboard with Pages option" data-i18n-alt="step2ImageAlt">
+        </div>
+
+        <div class="step">
+            <h2 data-i18n="step3Title">Step 3: Create a New Project</h2>
+            <p data-i18n="step3Desc">Click the 'Create a project' button and select 'Direct Upload' as the deployment method.</p>
+            <img src="images/deploy/step3-create-project.png" alt="Create project and Direct Upload option" data-i18n-alt="step3ImageAlt">
+        </div>
+
+        <div class="step">
+            <h2 data-i18n="step4Title">Step 4: Upload Your Files</h2>
+            <div class="sub-step">
+                <h3 data-i18n="step4aTitle">Step 4.1: Enter Project Name</h3>
+                <p data-i18n="step4aDesc">Enter your project name. Your repository will be accessible at [project-name].pages.dev</p>
+                <img src="images/deploy/step4-upload1.png" alt="Enter project name" data-i18n-alt="step4aImageAlt">
+            </div>
+
+            <div class="sub-step">
+                <h3 data-i18n="step4bTitle">Step 4.2: Click to Upload</h3>
+                <p data-i18n="step4bDesc">Click the upload area to select your ZIP file</p>
+                <img src="images/deploy/step4-upload2.png" alt="Click to upload" data-i18n-alt="step4bImageAlt">
+            </div>
+
+            <div class="sub-step">
+                <h3 data-i18n="step4cTitle">Step 4.3: Upload in Progress</h3>
+                <p data-i18n="step4cDesc">Wait while your files are being uploaded</p>
+                <img src="images/deploy/step4-upload3.png" alt="Upload in progress" data-i18n-alt="step4cImageAlt">
+            </div>
+
+            <div class="sub-step">
+                <h3 data-i18n="step4dTitle">Step 4.4: Upload Complete</h3>
+                <p data-i18n="step4dDesc">Your files have been successfully uploaded</p>
+                <img src="images/deploy/step4-upload4.png" alt="Upload complete" data-i18n-alt="step4dImageAlt">
+            </div>
+        </div>
+
+        <div class="step">
+            <h2 data-i18n="step5Title">Step 5: Share Your Site</h2>
+            <p data-i18n="step5Desc">Once deployment is complete, Cloudflare will provide you with a URL. You can share this URL with your paper reviewers.</p>
+            <img src="images/deploy/step6-share.png" alt="Deployment complete with URL" data-i18n-alt="step6ImageAlt">
+        </div>
+
+        <div class="cloudflare-section">
+            <h2 data-i18n="cloudflareTitle">Visit Cloudflare</h2>
+            <p data-i18n="cloudflareDesc">Learn more about Cloudflare's services and features</p>
+            <a href="https://www.cloudflare.com/" target="_blank" class="cloudflare-button" data-i18n="visitCloudflare">Visit Cloudflare</a>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="index.html" class="back-button" data-i18n="backToHome">Back to Home</a>
+        </div>
+    </div>
+
+    <script src="i18n.js"></script>
+    <script>
+        // 添加部署指南页面的翻译
+        const deployGuideTranslations = {
+            en: {
+                deployGuideTitle: "Deploy to Cloudflare Pages",
+                step1Title: "Step 1: Sign up for Cloudflare",
+                step1Desc: "If you don't have a Cloudflare account, go to cloudflare.com and create one. It's free!",
+                step2Title: "Step 2: Access Cloudflare Pages",
+                step2Desc: "After logging in, click on 'Pages' in the left sidebar of your Cloudflare dashboard.",
+                step3Title: "Step 3: Create a New Project",
+                step3Desc: "Click the 'Create a project' button and select 'Direct Upload' as the deployment method.",
+                step4Title: "Step 4: Upload Your Files",
+                step4Desc: "Drag and drop the ZIP file you downloaded from our tool, or click to select it. The file should contain your anonymous static website.",
+                step5Title: "Step 5: Share Your Site",
+                step5Desc: "Once deployment is complete, Cloudflare will provide you with a URL. You can share this URL with your paper reviewers.",
+                backToHome: "Back to Home",
+                cloudflareTitle: "Visit Cloudflare",
+                cloudflareDesc: "Learn more about Cloudflare's services and features",
+                visitCloudflare: "Visit Cloudflare",
+                step1ImageAlt: "Cloudflare signup page",
+                step2ImageAlt: "Cloudflare dashboard with Pages option",
+                step3ImageAlt: "Create project and Direct Upload option",
+                step4ImageAlt: "File upload interface",
+                step5ImageAlt: "Deployment complete with URL",
+                step4aTitle: "Step 4.1: Enter Project Name",
+                step4aDesc: "Enter your project name. Your repository will be accessible at [project-name].pages.dev",
+                step4bTitle: "Step 4.2: Click to Upload",
+                step4bDesc: "Click the upload area to select your ZIP file",
+                step4cTitle: "Step 4.3: Upload in Progress",
+                step4cDesc: "Wait while your files are being uploaded",
+                step4dTitle: "Step 4.4: Upload Complete",
+                step4dDesc: "Your files have been successfully uploaded",
+                step4aImageAlt: "Enter project name",
+                step4bImageAlt: "Click to upload",
+                step4cImageAlt: "Upload in progress",
+                step4dImageAlt: "Upload complete"
+            },
+            zh: {
+                deployGuideTitle: "部署到 Cloudflare Pages",
+                step1Title: "步骤 1：注册 Cloudflare",
+                step1Desc: "如果您还没有 Cloudflare 账号，请访问 cloudflare.com 创建一个。完全免费！",
+                step2Title: "步骤 2：访问 Cloudflare Pages",
+                step2Desc: "登录后，在 Cloudflare 仪表板的左侧边栏中点击 'Pages'。",
+                step3Title: "步骤 3：创建新项目",
+                step3Desc: "点击 '创建项目' 按钮，选择 '直接上传' 作为部署方式。",
+                step4Title: "步骤 4：上传文件",
+                step4Desc: "拖放从我们工具下载的 ZIP 文件，或点击选择它。该文件应包含您的匿名静态网站。",
+                step5Title: "步骤 5：分享您的网站",
+                step5Desc: "部署完成后，Cloudflare 将为您提供一个 URL。您可以将此 URL 分享给论文审稿人。",
+                backToHome: "返回首页",
+                cloudflareTitle: "访问 Cloudflare",
+                cloudflareDesc: "了解更多关于 Cloudflare 的服务和功能",
+                visitCloudflare: "访问 Cloudflare",
+                step1ImageAlt: "Cloudflare 注册页面",
+                step2ImageAlt: "Cloudflare 仪表板中的 Pages 选项",
+                step3ImageAlt: "创建项目和直接上传选项",
+                step4ImageAlt: "文件上传界面",
+                step5ImageAlt: "部署完成后的 URL 页面",
+                step4aTitle: "步骤 4.1：输入项目名称",
+                step4aDesc: "输入您的项目名称。您的仓库将可以通过 [project-name].pages.dev 访问",
+                step4bTitle: "步骤 4.2：点击上传",
+                step4bDesc: "点击上传区域选择您的 ZIP 文件",
+                step4cTitle: "步骤 4.3：上传进行中",
+                step4cDesc: "等待文件上传完成",
+                step4dTitle: "步骤 4.4：上传完成",
+                step4dDesc: "您的文件已成功上传"
+            }
+        };
+
+        // 合并翻译
+        Object.keys(deployGuideTranslations).forEach(lang => {
+            translations[lang] = { ...translations[lang], ...deployGuideTranslations[lang] };
+        });
+
+        function toggleLanguage() {
+            const currentLang = getCurrentLanguage();
+            setLanguage(currentLang === 'en' ? 'zh' : 'en');
+            document.documentElement.lang = currentLang === 'en' ? 'zh' : 'en';
+        }
+    </script>
+</body>
+</html> 
