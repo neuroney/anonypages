@@ -69,7 +69,3 @@ MIT License
 ### 🤝 Contributing
 
 Issues and Pull Requests are welcome!
-
-### 📞 Contact
-
-For questions or suggestions, please open an Issue or email [neuroney@outlook.com]
